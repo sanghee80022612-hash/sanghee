@@ -15,10 +15,9 @@ const POSTS_COLLECTION = "posts";
 /**
  * 새 게시글 작성
  */
-export const createPost = async (title: string, content: string, authorId: string, authorEmail: string) => {
+export const createPost = async (content: string, authorId: string, authorEmail: string) => {
   try {
     await addDoc(collection(db, POSTS_COLLECTION), {
-      title,
       content,
       authorId,
       authorEmail,
@@ -31,7 +30,7 @@ export const createPost = async (title: string, content: string, authorId: strin
 };
 
 /**
- * 실시간 게시글 목록 구독
+ * 게시글 목록 실시간 구독
  */
 export const subscribePosts = (callback: (posts: Post[]) => void) => {
   const q = query(collection(db, POSTS_COLLECTION), orderBy("createdAt", "desc"));
