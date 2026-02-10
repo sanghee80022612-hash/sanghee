@@ -1,0 +1,5 @@
+{
+  "name": "Firebase Auth Classic Editor",
+  "description": "Firebase Authentication을 활용한 깔끔하고 기능적인 회원가입 및 로그인 시스템입니다. Classic Editor 스타일의 정제된 UI를 제공합니다.",
+  "requestFramePermissions": []
+}
