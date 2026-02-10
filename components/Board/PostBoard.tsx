@@ -17,14 +17,12 @@ const PostBoard: React.FC<PostBoardProps> = ({ currentUser }) => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
+  // 컴포넌트 마운트 시 실시간 구독 시작
   useEffect(() => {
-    // 실시간 구독 시작
     const unsubscribe = subscribePosts((newPosts) => {
       setPosts(newPosts);
       setFetching(false);
     });
-
-    // 언마운트 시 구독 해제
     return () => unsubscribe();
   }, []);
 
@@ -34,7 +32,7 @@ const PostBoard: React.FC<PostBoardProps> = ({ currentUser }) => {
 
     setLoading(true);
     try {
-      await createPost(content, currentUser.uid, currentUser.email || '익명 사용자');
+      await createPost(content, currentUser.uid, currentUser.email || '익명');
       setContent('');
     } catch (err) {
       alert(err instanceof Error ? err.message : '오류가 발생했습니다.');
@@ -55,28 +53,28 @@ const PostBoard: React.FC<PostBoardProps> = ({ currentUser }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="space-y-8">
       {/* 글쓰기 섹션 */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <form onSubmit={handlePostSubmit}>
-          <div className="p-4 border-b border-gray-50 bg-gray-50/30 flex items-center gap-2">
+          <div className="p-4 border-b border-gray-50 bg-gray-50/50 flex items-center gap-2">
             <MessageSquare size={16} className="text-blue-600" />
-            <span className="text-xs font-bold text-gray-700 uppercase tracking-tight">새로운 생각 나누기</span>
+            <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">새로운 생각 공유</span>
           </div>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="무슨 생각을 하고 계신가요?"
-            className="w-full p-4 min-h-[120px] focus:outline-none resize-none text-gray-800 placeholder-gray-400"
-          />
-          <div className="p-3 bg-gray-50/50 flex justify-end items-center gap-3 border-t border-gray-100">
-            <span className="text-[11px] text-gray-400 font-medium">
-              {content.length} / 500
-            </span>
+          <div className="p-4">
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="무슨 생각을 하고 계신가요?"
+              className="w-full min-h-[100px] p-3 text-sm border-none focus:ring-0 resize-none placeholder-gray-400"
+              required
+            />
+          </div>
+          <div className="p-3 bg-gray-50 flex justify-end items-center px-4 border-t border-gray-100">
             <button
               type="submit"
               disabled={loading || !content.trim()}
-              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
+              className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 transition-all shadow-sm"
             >
               {loading ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
               <span>게시하기</span>
@@ -87,44 +85,47 @@ const PostBoard: React.FC<PostBoardProps> = ({ currentUser }) => {
 
       {/* 게시글 목록 섹션 */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between px-1">
-          <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-            타임라인
-            <span className="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">
-              {posts.length}
-            </span>
-          </h3>
-        </div>
-
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest px-1">최근 게시물</h3>
+        
         {fetching ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="animate-spin text-blue-500 mb-2" size={32} />
-            <p className="text-sm text-gray-400 font-medium">게시글을 불러오는 중...</p>
+          <div className="py-20 flex flex-col items-center justify-center text-gray-400">
+            <Loader2 className="animate-spin mb-2" size={32} />
+            <p className="text-xs">글을 불러오는 중...</p>
           </div>
         ) : posts.length === 0 ? (
-          <div className="bg-white border border-dashed border-gray-200 rounded-xl py-16 text-center">
-            <p className="text-gray-400 text-sm">아직 등록된 게시글이 없습니다. 첫 글을 남겨보세요!</p>
+          <div className="bg-white rounded-xl border border-gray-100 py-16 text-center">
+            <p className="text-gray-400 text-sm italic">아직 작성된 글이 없습니다. 첫 번째 글을 남겨보세요!</p>
           </div>
         ) : (
           posts.map((post) => (
-            <div key={post.id} className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-4">
+            <div 
+              key={post.id} 
+              className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow group"
+            >
+              <div className="flex justify-between items-start mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
-                    <User className="text-blue-500" size={16} />
+                  <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100">
+                    <User size={16} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-900">{post.authorEmail}</p>
-                    <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-0.5">
+                    <p className="text-sm font-bold text-gray-900 leading-none">
+                      {post.authorEmail?.split('@')[0]}
+                    </p>
+                    <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-1 uppercase font-semibold">
                       <Clock size={10} />
-                      <span>{formatDate(post.createdAt)}</span>
+                      {formatDate(post.createdAt)}
                     </div>
                   </div>
                 </div>
               </div>
-              <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap">
+              
+              <div className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap pl-10">
                 {post.content}
-              </p>
+              </div>
+              
+              <div className="mt-4 pt-4 border-t border-gray-50 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-[10px] text-gray-300 font-mono tracking-tighter">ID: {post.id}</span>
+              </div>
             </div>
           ))
         )}

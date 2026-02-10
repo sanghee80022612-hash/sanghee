@@ -13,7 +13,7 @@ import { Post } from "../types/post";
 const POSTS_COLLECTION = "posts";
 
 /**
- * 새 게시글 작성
+ * 새로운 게시글 작성
  */
 export const createPost = async (content: string, authorId: string, authorEmail: string) => {
   try {
@@ -30,7 +30,7 @@ export const createPost = async (content: string, authorId: string, authorEmail:
 };
 
 /**
- * 게시글 목록 실시간 구독
+ * 게시글 목록 실시간 구독 (최신순)
  */
 export const subscribePosts = (callback: (posts: Post[]) => void) => {
   const q = query(collection(db, POSTS_COLLECTION), orderBy("createdAt", "desc"));
